@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 set -o errexit
 
@@ -9,7 +9,7 @@ reg_name='kind-nerdctl-registry'
 reg_port='5000'
 
 
-cat <<EOF | KIND_EXPERIMENTAL_PROVIDER="nerdctl" kind create cluster --name ${cluster_name} --kubeconfig ${HOME}/.kube/${cluster_name}.kubeconfig --config=-
+cat <<EOF | KIND_EXPERIMENTAL_PROVIDER="nerdctl" kind create cluster --name "${cluster_name}" --kubeconfig "${HOME}"/.kube/"${cluster_name}".kubeconfig --config=-
 
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
