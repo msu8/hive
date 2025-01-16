@@ -1,4 +1,4 @@
-all: install_environment_bins create-kind-cluster create-registry nerdctl_login start_buildkitd build-image deploy
+all: install_environment_bins create-kind-cluster nerdctl_login start_buildkitd deploy
 
 # Install dependency bins, make hive & run containerd
 install_environment_bins:
@@ -9,7 +9,7 @@ nerdctl_login:
 	@echo "========================================"
 	@echo "OCP credentials are required, usernamne with which you login to OCP (e.g. oc login -u=$$ -p=$$)"
 	@echo "the password being a token, gotten via "oc whoami -t", or through through "copy logging command" in OCP web instance"
-	@echo "========================================"
+	@echo "========================================"image
 	@echo "Enter your username:"
 	@read USERNAME; \
 	echo "Enter your password:"; \
@@ -21,19 +21,11 @@ nerdctl_login:
 start_buildkitd:
 	@echo "Starting buildkitd"
 	./hack/buildkitd_build_push_image.sh
-	sleep 5
-
-# Create registry
-create-registry:
-	@echo "Creating local image registry"
-	nerdctl run -d --restart=always -p "5000:5000" --name "kind-nerdctl-registry" --network "kind" registry:2
-
 
 # Build the image
 build-image:
 	@echo "Building the image using buildkitd..."
 	buildctl --addr unix:///run/user/$$UID/buildkit/buildkitd.sock build --frontend dockerfile.v0 --local context=. --local dockerfile=. --secret id=docker,src=/home/$$USER/.docker/config.json --output type=image,name=localhost:5000/hive:latest,push=true
-
 
 # Delete Kind Cluster
 delete-kind-cluster:
@@ -48,10 +40,8 @@ create-kind-cluster:
 # Deploy & install certs
 deploy:
 	set -x
-	export KUBECONFIG=$(HIVE_ROOT)/.kube/dev-hive.kubeconfig 
 	@echo "Deploying the application..."
 	./hack/deploy.sh dev-hive
-	./hack/hiveadmission-dev-cert.sh
 
 # Scale down operator
 scale-down-operator:
@@ -61,11 +51,16 @@ scale-down-operator:
 scale-down-controllers:
 	oc scale -n dev-hive deployment.v1.apps/hive-controllers --replicas=0
 
+TODO: Fix envs
 # Run operator
 run-operator:
-	KUBECONFIG=$(KUBECONFIG) HIVE_OPERATOR_NS=$(HIVE_OPERATOR_NS) ./bin/operator --log-level=debug
+	./bin/operator --log-level=debug
 
 # Run controller
 run-controller:
 	touch metrics.json
 	./bin/manager --log-level=debug
+
+# Clean the environment
+prune-dev-env:
+	./hack/prune_dev_env.sh

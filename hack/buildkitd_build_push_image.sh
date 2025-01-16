@@ -1,4 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+export HIVE_ROOT="$(git rev-parse --show-toplevel)"
+export CNI_PATH=$HIVE_ROOT/.tmp/_output/bin/cni/bin
+export PATH=$HIVE_ROOT/.tmp/_output/bin:$PATH
 
 # Run BuildKit in the background
 echo "Starting BuildKit daemon in the background..."
@@ -15,5 +19,9 @@ fi
 # Edit registry URL according to buildkitd requirements
 sed -i 's/\.org:443/\.org\/v1\//g' ~/.docker/config.json
 
-echo "Setup complete. BuildKit is installed and running."
+echo "Setup complete. BuildKit is installed and running. Building and pushing the image"
+
+sleep 10
+
+buildctl --addr unix:///run/user/$UID/buildkit/buildkitd.sock build --frontend dockerfile.v0 --local context=. --local dockerfile=. --secret id=docker,src=/home/$USER/.docker/config.json --output type=image,name=localhost:5000/hive:latest,push=true
 
