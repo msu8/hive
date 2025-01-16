@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-export HIVE_ROOT="$(git rev-parse --show-toplevel)"
+HIVE_ROOT="$(git rev-parse --show-toplevel)"
+export HIVE_ROOT
 export CNI_PATH=$HIVE_ROOT/.tmp/_output/bin/cni/bin
 export PATH=$HIVE_ROOT/.tmp/_output/bin:$PATH
 
@@ -23,5 +24,5 @@ echo "Setup complete. BuildKit is installed and running. Building and pushing th
 
 sleep 10
 
-buildctl --addr unix:///run/user/$UID/buildkit/buildkitd.sock build --frontend dockerfile.v0 --local context=. --local dockerfile=. --secret id=docker,src=/home/$USER/.docker/config.json --output type=image,name=localhost:5000/hive:latest,push=true
+buildctl --addr unix:///run/user/$UID/buildkit/buildkitd.sock build --frontend dockerfile.v0 --local context=. --local dockerfile=. --secret id=docker,src=/home/"$USER"/.docker/config.json --output type=image,name=localhost:5000/hive:latest,push=true
 

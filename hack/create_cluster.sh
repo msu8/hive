@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-
-export HIVE_ROOT="$(git rev-parse --show-toplevel)"
+HIVE_ROOT="$(git rev-parse --show-toplevel)"
+export HIVE_ROOT
 export CNI_PATH=$HIVE_ROOT/.tmp/_output/bin/cni/bin
 export PATH=$HIVE_ROOT/.tmp/_output/bin:$PATH
 

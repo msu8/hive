@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-export HIVE_ROOT="$(git rev-parse --show-toplevel)"
+HIVE_ROOT="$(git rev-parse --show-toplevel)"
+export HIVE_ROOT
 export CNI_PATH=$HIVE_ROOT/.tmp/_output/bin/cni/bin
 export PATH=$HIVE_ROOT/.tmp/_output/bin:$PATH
 export KUBECONFIG=$HIVE_ROOT/.kube/dev-hive.kubeconfig
@@ -11,18 +12,18 @@ namespace="${1:-hive}"
 IMG="localhost:5000/hive:latest"
 
 echo "Creating namespace $(namespace) if it doesn't exist..."
-kubectl create namespace ${namespace} || true
+kubectl create namespace "${namespace}" || true
 
 echo "Creating deploy directory and copying kustomization.yaml..."
 mkdir -p overlays/deploy
 cp overlays/template/kustomization.yaml overlays/deploy
 
 
-cd overlays/deploy
+cd overlays/deploy || exit
 
 echo "Setting image and namespace in kustomization.yaml..."
 kustomize-4.1.3 edit set image registry.ci.openshift.org/openshift/hive-v4.0:hive=${IMG}
-kustomize-4.1.3 edit set namespace ${namespace}
+kustomize-4.1.3 edit set namespace "${namespace}"
 
 cd ../../
 
@@ -36,8 +37,8 @@ echo "Applying CRDs..."
 kubectl apply -f config/crds
 
 echo "Creating default HiveConfig..."
-cd config/templates/
-oc process --local=true -p HIVE_NS=${namespace} -p LOG_LEVEL=debug -f hiveconfig.yaml | oc apply -f -
+cd config/templates/ || exit
+oc process --local=true -p HIVE_NS="${namespace}" -p LOG_LEVEL=debug -f hiveconfig.yaml | oc apply -f -
 
 echo "Operator deployment completed successfully."
 
