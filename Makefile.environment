@@ -43,7 +43,7 @@ delete-kind-cluster:
 # Create Kind Cluster
 create-kind-cluster:
 	@echo "Creating a Kind cluster..."
-    ./hack/create_cluster.sh dev-hive
+	./hack/create_cluster.sh dev-hive
 
 # Deploy & install certs
 deploy:
