@@ -30,11 +30,11 @@ done
 
 export HIVE_ROOT
 
-mkdir -p "$HIVE_ROOT"/.tmp/bin/cni/bin
-export PATH="${HIVE_ROOT}/.tmp/bin:$PATH"
+mkdir -p "$HIVE_ROOT"/.tmp/_output/bin/cni/bin
+export PATH="${HIVE_ROOT}/.tmp/_output/bin:$PATH"
 
 # Go setup
-export GOPATH="${HIVE_ROOT}/.tmp/go"
+export GOPATH="${HIVE_ROOT}/.tmp/_output/go"
 mkdir -p "$GOPATH"
 
 export PATH="${GOPATH}/bin:$PATH"
@@ -44,7 +44,7 @@ CURRENT_VERSION=$(echo "$GO_VERSION" | awk '{print $3}' | sed 's/go//')
 
 if [[ -z "$GO_VERSION" ]] || [[ "$CURRENT_VERSION" != "${HIVE_GO_VERSION}"* ]]; then
    curl -L https://go.dev/dl/go1.22.0.linux-amd64.tar.gz |\
-   tar -C "$HIVE_ROOT"/.tmp -xz
+   tar -C "$HIVE_ROOT"/.tmp/_output -xz
 fi
 
 go install github.com/golang/mock/mockgen@latest
@@ -55,81 +55,81 @@ make
 # Install Dependencies
 if ! command_exists rootlesskit; then
   curl -L "https://github.com/rootless-containers/rootlesskit/releases/download/${ROOTLESSKIT_VERSION}/rootlesskit-x86_64.tar.gz" |\
-  tar -C "${HIVE_ROOT}/.tmp/bin" -xz rootlesskit
+  tar -C "${HIVE_ROOT}/.tmp/_output/bin" -xz rootlesskit
 fi
 
 # Install Containerd
 if ! command_exists containerd; then
   curl -L "https://github.com/containerd/containerd/releases/download/v${CONTAINERD_VERSION}/containerd-2.0.1-linux-amd64.tar.gz" |\
-  tar -xz -C "${HIVE_ROOT}/.tmp/bin" --strip-components=1 "bin/containerd" "bin/containerd-shim-runc-v2"
+  tar -xz -C "${HIVE_ROOT}/.tmp/_output/bin" --strip-components=1 "bin/containerd" "bin/containerd-shim-runc-v2"
 fi
 
 # Install Slirp4netns
 if ! command_exists slirp4netns; then
-  curl -L "https://github.com/rootless-containers/slirp4netns/releases/download/${SLIRP4NETNS_VERSION}/slirp4netns-x86_64" -o "${HIVE_ROOT}/.tmp/bin/slirp4netns"
-  chmod +x "${HIVE_ROOT}/.tmp/bin/slirp4netns"
+  curl -L "https://github.com/rootless-containers/slirp4netns/releases/download/${SLIRP4NETNS_VERSION}/slirp4netns-x86_64" -o "${HIVE_ROOT}/.tmp/_output/bin/slirp4netns"
+  chmod +x "${HIVE_ROOT}/.tmp/_output/bin/slirp4netns"
 fi
 
 # Install Kustomize
 if ! command_exists kustomize-4.1.3; then
  curl -L https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz |\
- tar -xz -C "${HIVE_ROOT}/.tmp/bin" kustomize && mv "$HIVE_ROOT"/.tmp/bin/kustomize "$HIVE_ROOT"/.tmp/bin/kustomize-4.1.3 
+ tar -xz -C "${HIVE_ROOT}/.tmp/_output/bin" kustomize && mv "$HIVE_ROOT"/.tmp/_output/bin/kustomize "$HIVE_ROOT"/.tmp/_output/bin/kustomize-4.1.3 
 fi
 
 # Install nerdctl
 if ! command_exists nerdctl; then
   curl -L "https://github.com/containerd/nerdctl/releases/download/v${NERDCTL_VERSION}/nerdctl-${NERDCTL_VERSION}-linux-amd64.tar.gz" |\
-  tar -xz -C "${HIVE_ROOT}/.tmp/bin" containerd-rootless.sh containerd-rootless-setuptool.sh nerdctl
+  tar -xz -C "${HIVE_ROOT}/.tmp/_output/bin" containerd-rootless.sh containerd-rootless-setuptool.sh nerdctl
 fi
 
 # Install cfssl & cfssljson
 if ! command_exists cfssl; then
-  curl -L "https://github.com/cloudflare/cfssl/releases/download/v${CFSSL_VERSION}/cfssl_${CFSSL_VERSION}_linux_amd64" -o "${HIVE_ROOT}/.tmp/bin/cfssl"
-  chmod +x "$HIVE_ROOT"/.tmp/bin/cfssl
+  curl -L "https://github.com/cloudflare/cfssl/releases/download/v${CFSSL_VERSION}/cfssl_${CFSSL_VERSION}_linux_amd64" -o "${HIVE_ROOT}/.tmp/_output/bin/cfssl"
+  chmod +x "$HIVE_ROOT"/.tmp/_output/bin/cfssl
 
-  curl -L "https://github.com/cloudflare/cfssl/releases/download/v${CFSSL_VERSION}/cfssljson_${CFSSL_VERSION}_linux_amd64" -o "${HIVE_ROOT}/.tmp/bin/cfssljson"
-  chmod +x "$HIVE_ROOT"/.tmp/bin/cfssljson
+  curl -L "https://github.com/cloudflare/cfssl/releases/download/v${CFSSL_VERSION}/cfssljson_${CFSSL_VERSION}_linux_amd64" -o "${HIVE_ROOT}/.tmp/_output/bin/cfssljson"
+  chmod +x "$HIVE_ROOT"/.tmp/_output/bin/cfssljson
 fi
 
 # Install oc
 if ! command_exists oc; then
   curl -L "https://github.com/okd-project/okd/releases/download/4.17.0-okd-scos.0/openshift-client-linux-amd64-rhel8-4.17.0-okd-scos.0.tar.gz" |\
-  tar -xz -C "${HIVE_ROOT}/.tmp/bin" "oc"
+  tar -xz -C "${HIVE_ROOT}/.tmp/_output/bin" "oc"
 fi
 
 # Install kubectl
 if ! command_exists kubectl; then
-  curl -L "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o "${HIVE_ROOT}/.tmp/bin/kubectl"
-  chmod +x "$HIVE_ROOT"/.tmp/bin/kubectl
+  curl -L "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl" -o "${HIVE_ROOT}/.tmp/_output/bin/kubectl"
+  chmod +x "$HIVE_ROOT"/.tmp/_output/bin/kubectl
 fi
 
 # Install kind
 if ! command_exists kind; then
-  curl -L "https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64" -o "${HIVE_ROOT}/.tmp/bin/kind"
-  chmod +x "$HIVE_ROOT"/.tmp/bin/kind
+  curl -L "https://kind.sigs.k8s.io/dl/${KIND_VERSION}/kind-linux-amd64" -o "${HIVE_ROOT}/.tmp/_output/bin/kind"
+  chmod +x "$HIVE_ROOT"/.tmp/_output/bin/kind
 fi
 
 # Install buildkitd
 if ! command_exists buildkitd; then
   curl -L "https://github.com/moby/buildkit/releases/download/${BUILDKIT_VERSION}/buildkit-${BUILDKIT_VERSION}.linux-amd64.tar.gz" |\
-  tar -xz -C "${HIVE_ROOT}/.tmp/bin" --strip-components=1 "bin/buildkitd" "bin/buildctl"
+  tar -xz -C "${HIVE_ROOT}/.tmp/_output/bin" --strip-components=1 "bin/buildkitd" "bin/buildctl"
 fi
 
 # Install CNI plugins
-if [ ! -f "$HIVE_ROOT/.tmp/bin/cni/bin/bridge" ]; then
+if [ ! -f "$HIVE_ROOT/.tmp/_output/bin/cni/bin/bridge" ]; then
   curl -L "https://github.com/containernetworking/plugins/releases/download/${CNI_PLUGINS_VERSION}/cni-plugins-linux-amd64-${CNI_PLUGINS_VERSION}.tgz" |\
-  tar -xz -C "${HIVE_ROOT}/.tmp/bin/cni/bin"
+  tar -xz -C "${HIVE_ROOT}/.tmp/_output/bin/cni/bin"
 fi
 
 # Install runc
 if ! command_exists runc; then
-  curl -L "https://github.com/opencontainers/runc/releases/download/${RUNC_VERSION}/runc.amd64" -o "${HIVE_ROOT}/.tmp/bin/runc"
-  chmod +x "$HIVE_ROOT"/.tmp/bin/runc
+  curl -L "https://github.com/opencontainers/runc/releases/download/${RUNC_VERSION}/runc.amd64" -o "${HIVE_ROOT}/.tmp/_output/bin/runc"
+  chmod +x "$HIVE_ROOT"/.tmp/_output/bin/runc
 fi
 
 # Check requirements
 
-export CNI_PATH="$HIVE_ROOT"/.tmp/bin/cni/bin/
+export CNI_PATH="$HIVE_ROOT"/.tmp/_output/bin/cni/bin/
 
 echo "Checking system requirements for rootless containerd..."
 CHECK_OUTPUT=$(containerd-rootless-setuptool.sh check)
