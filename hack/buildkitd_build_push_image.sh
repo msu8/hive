@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-
 HIVE_ROOT="$(git rev-parse --show-toplevel)"
+CNI_PATH="$HIVE_ROOT"/.tmp/cni/bin
 export HIVE_ROOT
-export CNI_PATH=$HIVE_ROOT/.tmp/_output/bin/cni/bin
+export CNI_PATH
 export PATH=$HIVE_ROOT/.tmp/_output/bin:$PATH
 
 # Run BuildKit in the background

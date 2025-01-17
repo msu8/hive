@@ -1,22 +1,22 @@
 #!/usr/bin/env bash
 HIVE_ROOT="$(git rev-parse --show-toplevel)"
+CNI_PATH="$HIVE_ROOT"/.tmp/cni/bin
 export HIVE_ROOT
-export CNI_PATH=$HIVE_ROOT/.tmp/_output/bin/cni/bin
+export CNI_PATH
 export PATH=$HIVE_ROOT/.tmp/_output/bin:$PATH
 
 
 set -o errexit
 
 HIVE_ROOT="$(git rev-parse --show-toplevel)"
-export CNI_PATH=$HIVE_ROOT/.tmp/_output/bin/cni/bin
 
-cluster_name="${1:-hive}"
+cluster_name="dev-hive"
 
 reg_name='kind-nerdctl-registry'
 
 reg_port='5000'
 
-sleep 5
+sleep 3
 
 cat <<EOF | KIND_EXPERIMENTAL_PROVIDER="nerdctl" kind create cluster --name "${cluster_name}" --kubeconfig "${HIVE_ROOT}"/.kube/"${cluster_name}".kubeconfig --config=-
 
@@ -28,6 +28,6 @@ containerdConfigPatches:
    endpoint = ["http://${reg_name}:${reg_port}"]
 EOF
 
-sleep 5
+sleep 3
 
 nerdctl run -d --restart=always -p "5000:5000" --name "kind-nerdctl-registry" --network "kind" registry:2

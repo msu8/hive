@@ -2,7 +2,6 @@
 
 HIVE_ROOT="$(git rev-parse --show-toplevel)"
 export HIVE_ROOT
-export CNI_PATH=$HIVE_ROOT/.tmp/_output/bin/cni/bin
 export PATH=$HIVE_ROOT/.tmp/_output/bin:$PATH
 export KUBECONFIG=$HIVE_ROOT/.kube/dev-hive.kubeconfig
 export HIVE_NS='dev-hive'

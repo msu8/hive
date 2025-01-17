@@ -156,6 +156,54 @@ NOTE: If you are running on Kubernetes or kind >= version 1.24, (not OpenShift),
 ```bash
 ./hack/create-service-account-secrets.sh
 ```
+### Rootless development environment setup
+An automated script can set up your development environment - download go, prerequisite binaries, create a cluster, registry, and deploy hive. It uses binaries which it stores in the repo's root. The setup is OS-independent and runs rootless, however, it currently only works on amd64 machines.
+
+To prepare the environment, run 
+
+```bash
+make -f Makefile.environment
+```
+Containerd/nerdctl is used for container management, image is built using buildkitd, cluster management is done with kubectl and oc.
+
+Hive will be deployed into a cluster with *'dev-hive'* namespace.
+
+# Setting up VScode for hive development
+Prerequisites
+- [VScode](https://code.visualstudio.com/docs/setup/linux)
+- VScode Go extension *(Ctrl+Shift+X and search for Go)*
+- Delve (#TODO)
+
+After opening Hive in VScode, you can set the IDE for debugging by pressing *ctrl + shift + D* and clicking on *create launch.json*.
+
+The launch.json will govern which aspect to debug, e.g. the controller or the operator. Pressing F5 starts the debug process.
+
+Example of launch.json for debugging the controller
+
+```bash
+{
+   "version": "0.2.0",
+   "configurations": [
+     {
+       "name": "HiveController",
+       "type": "go",
+       "request": "launch",
+       "mode": "auto",
+       "program": "${workspaceFolder}/cmd/manager/main.go",
+       "env": {
+         "HIVE_NS": "dev-hive",
+         "KUBECONFIG":"/home/$USERNAME/.kube/dev-hive.kubeconfig",
+         "HIVE_SKIP_LEADER_ELECTION":"1",
+         "METRICS_CONFIG_FILE":"/home/$USERNAME/hive/metrics.json",
+         "HIVE_MACHINEPOOL_POD_NAME":"hive-machinepool-0",
+         "HIVE_OPERATOR_NS":"dev-hive",
+         "HIVE_CLUSTERSYNC_POD_NAME":"hive-clustersync-0",
+       },
+       "args": ["--log-level=debug"]
+     },
+  ]
+ }
+```
 
 ### Fedora Development Container Build
 

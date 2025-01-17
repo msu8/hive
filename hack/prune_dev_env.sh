@@ -23,4 +23,4 @@ for pid in $buildkitd_pids; do
   kill "$pid"
 done
 
-rm -rf "$HIVE_ROOT"/.tmp "$HIVE_ROOT"/.kube "$HIVE_ROOT"/hiveadmission-certs
+sudo rm -rf "$HIVE_ROOT"/.tmp "$HIVE_ROOT"/.kube "$HIVE_ROOT"/hiveadmission-certs

@@ -10,16 +10,16 @@ NERDCTL_VERSION="2.0.2"
 CFSSL_VERSION="1.6.5"
 KIND_VERSION="v0.25.0"
 BUILDKIT_VERSION="v0.18.2"
-CNI_PLUGINS_VERSION="v1.6.0"
+CNI_PLUGINS_VERSION="v1.6.2"
 RUNC_VERSION="v1.2.3"
 HIVE_ROOT="$(git rev-parse --show-toplevel)"
+CNI_PATH="$HIVE_ROOT"/.tmp/cni/bin
 
 command_exists() {
  command -v "$1" >/dev/null 2>&1
 }
 
 # Requirements for running this script or not available in binary form
-commands=("make" "awk" "sed" "git" "python3" "pip" "iptables")
 
 for command in "${commands[@]}"; do
   if ! command_exists "$command"; then
@@ -30,7 +30,9 @@ done
 
 export HIVE_ROOT
 
-mkdir -p "$HIVE_ROOT"/.tmp/_output/bin/cni/bin
+mkdir -p "$HIVE_ROOT"/.tmp/_output/bin
+mkdir -p "$CNI_PATH"
+export CNI_PATH
 export PATH="${HIVE_ROOT}/.tmp/_output/bin:$PATH"
 
 # Go setup
@@ -51,6 +53,7 @@ go install github.com/golang/mock/mockgen@latest
 
 # Build Hive
 make
+
 
 # Install Dependencies
 if ! command_exists rootlesskit; then
@@ -116,9 +119,9 @@ if ! command_exists buildkitd; then
 fi
 
 # Install CNI plugins
-if [ ! -f "$HIVE_ROOT/.tmp/_output/bin/cni/bin/bridge" ]; then
+if [ ! -f "$CNI_PATH/bridge" ]; then
   curl -L "https://github.com/containernetworking/plugins/releases/download/${CNI_PLUGINS_VERSION}/cni-plugins-linux-amd64-${CNI_PLUGINS_VERSION}.tgz" |\
-  tar -xz -C "${HIVE_ROOT}/.tmp/_output/bin/cni/bin"
+  tar -xz -C "${$CNI_PATH}"
 fi
 
 # Install runc
@@ -126,10 +129,6 @@ if ! command_exists runc; then
   curl -L "https://github.com/opencontainers/runc/releases/download/${RUNC_VERSION}/runc.amd64" -o "${HIVE_ROOT}/.tmp/_output/bin/runc"
   chmod +x "$HIVE_ROOT"/.tmp/_output/bin/runc
 fi
-
-# Check requirements
-
-export CNI_PATH="$HIVE_ROOT"/.tmp/_output/bin/cni/bin/
 
 echo "Checking system requirements for rootless containerd..."
 CHECK_OUTPUT=$(containerd-rootless-setuptool.sh check)
