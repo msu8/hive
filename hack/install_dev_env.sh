@@ -121,7 +121,7 @@ fi
 # Install CNI plugins
 if [ ! -f "$CNI_PATH/bridge" ]; then
   curl -L "https://github.com/containernetworking/plugins/releases/download/${CNI_PLUGINS_VERSION}/cni-plugins-linux-amd64-${CNI_PLUGINS_VERSION}.tgz" |\
-  tar -xz -C "${$CNI_PATH}"
+  tar -xz -C "${CNI_PATH}"
 fi
 
 # Install runc
