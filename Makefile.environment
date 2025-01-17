@@ -1,6 +1,6 @@
 HIVE_ROOT := $(shell git rev-parse --show-toplevel)
 export PATH := $(HIVE_ROOT)/.tmp/_output/bin:$(PATH)
-export KUBECONFIG := $(HIVE_ROOT)/.kube/dev-hive.kubeconfi
+export KUBECONFIG := $(HIVE_ROOT)/.kube/dev-hive.kubeconfig
 export HIVE_NS := 'dev-hive'
 
 all: install_environment_bins create_cluster_registry nerdctl_login start_buildkitd deploy

@@ -218,6 +218,18 @@ Containerd/nerdctl is used for container management, image is built using buildk
 
 Hive will be deployed into a cluster with *'dev-hive'* namespace.
 
+After the setup is done, to manage the cluster and do other actions from your shell, source */hack/dev_env_vars.sh* first in order ot get access the necessary paths & environment variables.
+
+```bash
+source hack/dev_env_vars.sh
+```
+
+To clean up your environment *(remove containers, build cache, /.tmp, /.kube, /hiveadmission-certs, background processes)*, please run
+
+```bash
+make -f Makefile.environment prune-dev-env
+```
+
 ### Setting up VScode for hive development
 Prerequisites
 - [VScode](https://code.visualstudio.com/docs/setup/linux)
