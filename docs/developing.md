@@ -15,6 +15,8 @@
   - [Running Code Locally](#running-code-locally)
     - [hive-operator](#hive-operator)
   - [hive-controllers](#hive-controllers)
+- [Rootless development environment setup](#rootless-development-environment-setup)
+  - [Setting up VScode for hive development](#setting-up-vscode-for-hive-development)
 - [Developing Hiveutil Install Manager](#developing-hiveutil-install-manager)
 - [Enable Debug Logging In Hive Controllers](#enable-debug-logging-in-hive-controllers)
 - [Using Serving Certificates](#using-serving-certificates)
@@ -156,6 +158,54 @@ NOTE: If you are running on Kubernetes or kind >= version 1.24, (not OpenShift),
 ```bash
 ./hack/create-service-account-secrets.sh
 ```
+
+### Fedora Development Container Build
+
+This approach is much faster than a full container build as it uses a base OS image, and binaries compiled on your host OS and then added to the container. *At present this is best suited for Fedora 33+.*
+
+The base image only needs to be built once locally, though you may wish to periodically update it:
+
+```bash
+make image-hive-fedora-dev-base
+```
+
+You can now build the development image with the hiveutil binaries from your local system:
+
+```bash
+export IMG="quay.io/{username}/hive:latest}"
+make build image-hive-fedora-dev docker-push deploy
+oc delete pods -n hive --all
+```
+
+NOTE: If you are running on Kubernetes or kind, (not OpenShift), you will also need to create certificates for hiveadmission after running make deploy for the first time:
+
+```bash
+./hack/hiveadmission-dev-cert.sh
+```
+
+### Running Code Locally
+
+Our typical approach to manually testing code is to deploy Hive into your current cluster as defined by kubeconfig, scale down the relevant component you wish to test, and then run its code locally.
+It is also possible to run the controllers locally on the host OS using your current kubeconfig context. To do this you would deploy normally per above, scale down the appropriate Deployment for the component you wish to work on, and then run the code locally.
+
+TODO: this section needs updating for breakout of clustersync controllers, and various configurations required for controllers.
+
+#### hive-operator
+
+```bash
+oc scale -n hive deployment.v1.apps/hive-operator --replicas=0
+make run-operator
+```
+
+### hive-controllers
+
+```bash
+oc scale -n hive deployment.v1.apps/hive-controllers --replicas=0
+HIVE_NS="hive" make run
+```
+
+Kind users should also specify `HIVE_IMAGE="localhost:5000/hive:latest"` as the default image location cannot be authenticated to from Kind clusters, resulting in inability to launch install pods.
+
 # Rootless development environment setup
 An automated script can set up your development environment - download go, prerequisite binaries, create a cluster, registry, and deploy hive. It uses binaries which it stores in the repo's root. The setup is OS-independent and runs rootless, however, it currently only works on amd64 machines.
 
@@ -204,53 +254,6 @@ Example of launch.json for debugging the controller
   ]
  }
 ```
-
-### Fedora Development Container Build
-
-This approach is much faster than a full container build as it uses a base OS image, and binaries compiled on your host OS and then added to the container. *At present this is best suited for Fedora 33+.*
-
-The base image only needs to be built once locally, though you may wish to periodically update it:
-
-```bash
-make image-hive-fedora-dev-base
-```
-
-You can now build the development image with the hiveutil binaries from your local system:
-
-```bash
-export IMG="quay.io/{username}/hive:latest}"
-make build image-hive-fedora-dev docker-push deploy
-oc delete pods -n hive --all
-```
-
-NOTE: If you are running on Kubernetes or kind, (not OpenShift), you will also need to create certificates for hiveadmission after running make deploy for the first time:
-
-```bash
-./hack/hiveadmission-dev-cert.sh
-```
-
-### Running Code Locally
-
-Our typical approach to manually testing code is to deploy Hive into your current cluster as defined by kubeconfig, scale down the relevant component you wish to test, and then run its code locally.
-It is also possible to run the controllers locally on the host OS using your current kubeconfig context. To do this you would deploy normally per above, scale down the appropriate Deployment for the component you wish to work on, and then run the code locally.
-
-TODO: this section needs updating for breakout of clustersync controllers, and various configurations required for controllers.
-
-#### hive-operator
-
-```bash
-oc scale -n hive deployment.v1.apps/hive-operator --replicas=0
-make run-operator
-```
-
-### hive-controllers
-
-```bash
-oc scale -n hive deployment.v1.apps/hive-controllers --replicas=0
-HIVE_NS="hive" make run
-```
-
-Kind users should also specify `HIVE_IMAGE="localhost:5000/hive:latest"` as the default image location cannot be authenticated to from Kind clusters, resulting in inability to launch install pods.
 
 ## Developing Hiveutil Install Manager
 

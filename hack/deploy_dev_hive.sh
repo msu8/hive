@@ -6,7 +6,7 @@ export PATH=$HIVE_ROOT/.tmp/_output/bin:$PATH
 export KUBECONFIG=$HIVE_ROOT/.kube/dev-hive.kubeconfig
 export HIVE_NS='dev-hive'
 
-namespace="${1:-hive}"
+namespace="dev-hive"
 
 IMG="localhost:5000/hive:latest"
 
@@ -40,6 +40,4 @@ cd config/templates/ || exit
 oc process --local=true -p HIVE_NS="${namespace}" -p LOG_LEVEL=debug -f hiveconfig.yaml | oc apply -f -
 
 echo "Operator deployment completed successfully."
-
-./hiveadmission-dev-cert.sh
 

@@ -1,19 +1,15 @@
 #!/usr/bin/env bash
+
 HIVE_ROOT="$(git rev-parse --show-toplevel)"
 CNI_PATH="$HIVE_ROOT"/.tmp/cni/bin
 export HIVE_ROOT
 export CNI_PATH
 export PATH=$HIVE_ROOT/.tmp/_output/bin:$PATH
 
-
 set -o errexit
 
-HIVE_ROOT="$(git rev-parse --show-toplevel)"
-
 cluster_name="dev-hive"
-
 reg_name='kind-nerdctl-registry'
-
 reg_port='5000'
 
 sleep 3

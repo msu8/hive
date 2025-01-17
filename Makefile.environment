@@ -1,4 +1,9 @@
-all: install_environment_bins create-kind-cluster nerdctl_login start_buildkitd deploy
+HIVE_ROOT := $(shell git rev-parse --show-toplevel)
+export PATH := $(HIVE_ROOT)/.tmp/_output/bin:$(PATH)
+export KUBECONFIG := $(HIVE_ROOT)/.kube/dev-hive.kubeconfi
+export HIVE_NS := 'dev-hive'
+
+all: install_environment_bins create_cluster_registry nerdctl_login start_buildkitd deploy
 
 # Install dependency bins, make hive & run containerd
 install_environment_bins:
@@ -17,31 +22,23 @@ nerdctl_login:
 	nerdctl login registry.ci.openshift.org --username=$$USERNAME --password=$$PASSWORD
 
 
-# Start buildkitd
+# Create Kind Cluster & registry
+create_cluster_registry:
+	@echo "Creating a Kind cluster"
+	./hack/create_cluster_registry.sh
+
+# Start buildkitd, build and push image
 start_buildkitd:
 	@echo "Starting buildkitd"
 	./hack/buildkitd_build_push_image.sh
 
-# Build the image
-build-image:
-	@echo "Building the image using buildkitd..."
-	buildctl --addr unix:///run/user/$$UID/buildkit/buildkitd.sock build --frontend dockerfile.v0 --local context=. --local dockerfile=. --secret id=docker,src=/home/$$USER/.docker/config.json --output type=image,name=localhost:5000/hive:latest,push=true
-
-# Delete Kind Cluster
-delete-kind-cluster:
-	@echo "Deleting Kind cluster 'dev-hive'..."
-	kind delete cluster --name dev-hive
-
-# Create Kind Cluster
-create-kind-cluster:
-	@echo "Creating a Kind cluster..."
-	./hack/create_cluster.sh dev-hive
 
 # Deploy & install certs
 deploy:
 	set -x
-	@echo "Deploying the application..."
-	./hack/deploy.sh dev-hive
+	@echo "Deploying the application"
+	./hack/deploy_dev_hive.sh
+	./hack/hiveadmission-dev-cert.sh
 
 # Scale down operator
 scale-down-operator:
@@ -51,13 +48,13 @@ scale-down-operator:
 scale-down-controllers:
 	oc scale -n dev-hive deployment.v1.apps/hive-controllers --replicas=0
 
-TODO: Fix envs
+# TODO: Fix envs, kind delete cluster --name dev-hive
 # Run operator
-run-operator:
+run-operator: scale-down-operator
 	./bin/operator --log-level=debug
 
 # Run controller
-run-controller:
+run-controller: scale-down-controllers
 	touch metrics.json
 	./bin/manager --log-level=debug
 
