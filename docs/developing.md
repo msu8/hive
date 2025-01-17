@@ -156,7 +156,7 @@ NOTE: If you are running on Kubernetes or kind >= version 1.24, (not OpenShift),
 ```bash
 ./hack/create-service-account-secrets.sh
 ```
-### Rootless development environment setup
+# Rootless development environment setup
 An automated script can set up your development environment - download go, prerequisite binaries, create a cluster, registry, and deploy hive. It uses binaries which it stores in the repo's root. The setup is OS-independent and runs rootless, however, it currently only works on amd64 machines.
 
 To prepare the environment, run 
@@ -168,7 +168,7 @@ Containerd/nerdctl is used for container management, image is built using buildk
 
 Hive will be deployed into a cluster with *'dev-hive'* namespace.
 
-# Setting up VScode for hive development
+### Setting up VScode for hive development
 Prerequisites
 - [VScode](https://code.visualstudio.com/docs/setup/linux)
 - VScode Go extension *(Ctrl+Shift+X and search for Go)*
