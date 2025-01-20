@@ -45,7 +45,7 @@ GO_VERSION=$(go version 2>/dev/null)
 CURRENT_VERSION=$(echo "$GO_VERSION" | awk '{print $3}' | sed 's/go//')
 
 if [[ -z "$GO_VERSION" ]] || [[ "$CURRENT_VERSION" != "${HIVE_GO_VERSION}"* ]]; then
-   curl -L https://go.dev/dl/go1.22.0.linux-amd64.tar.gz |\
+   curl -L https://go.dev/dl/go1.22.4.linux-amd64.tar.gz |\
    tar -C "$HIVE_ROOT"/.tmp/_output -xz
 fi
 

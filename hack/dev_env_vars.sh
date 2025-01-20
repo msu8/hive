@@ -13,3 +13,4 @@ export METRICS_CONFIG_FILE=metrics.json
 export HIVE_NS=dev-hive
 export HIVE_MACHINEPOOL_POD_NAME="hive-machinepool-0"
 export HIVE_CLUSTERSYNC_POD_NAME="hive-clustersync-0"
+export GOROOT=$HIVE_ROOT/.tmp/_output/go

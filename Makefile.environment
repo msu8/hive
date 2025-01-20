@@ -55,7 +55,7 @@ run-operator: scale-down-operator
 
 # Run controller
 run-controller: scale-down-controllers
-	touch metrics.json
+	touch metrics.json && echo "{}" >> metrics.json
 	./bin/manager --log-level=debug
 
 # Clean the environment

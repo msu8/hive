@@ -218,7 +218,7 @@ Containerd/nerdctl is used for container management, image is built using buildk
 
 Hive will be deployed into a cluster with *'dev-hive'* namespace.
 
-After the setup is done, to manage the cluster and do other actions from your shell, source */hack/dev_env_vars.sh* first in order ot get access the necessary paths & environment variables.
+After the setup is done, to manage the cluster and do other actions from your shell, source */hack/dev_env_vars.sh* first in order to get access the necessary paths & environment variables.
 
 ```bash
 source hack/dev_env_vars.sh
@@ -234,13 +234,14 @@ make -f Makefile.environment prune-dev-env
 Prerequisites
 - [VScode](https://code.visualstudio.com/docs/setup/linux)
 - VScode Go extension *(Ctrl+Shift+X and search for Go)*
-- Delve (#TODO)
+- [Delve](https://github.com/go-delve/delve/tree/master/Documentation/installation)
+- *source hack/dev_env_vars.sh*
 
 After opening Hive in VScode, you can set the IDE for debugging by pressing *ctrl + shift + D* and clicking on *create launch.json*.
 
 The launch.json will govern which aspect to debug, e.g. the controller or the operator. Pressing F5 starts the debug process.
 
-Example of launch.json for debugging the controller
+Example of launch.json for debugging the controller *(absolute path required, fill in your username)*
 
 ```bash
 {
@@ -254,7 +255,7 @@ Example of launch.json for debugging the controller
        "program": "${workspaceFolder}/cmd/manager/main.go",
        "env": {
          "HIVE_NS": "dev-hive",
-         "KUBECONFIG":"/home/$USERNAME/.kube/dev-hive.kubeconfig",
+         "KUBECONFIG":"/home/$USERNAME/hive/.kube/dev-hive.kubeconfig",
          "HIVE_SKIP_LEADER_ELECTION":"1",
          "METRICS_CONFIG_FILE":"/home/$USERNAME/hive/metrics.json",
          "HIVE_MACHINEPOOL_POD_NAME":"hive-machinepool-0",
