@@ -3,14 +3,13 @@
 HIVE_ROOT="$(git rev-parse --show-toplevel)"
 export HIVE_ROOT
 export PATH=$HIVE_ROOT/.tmp/_output/bin:$PATH
-export KUBECONFIG=$HIVE_ROOT/.kube/dev-hive.kubeconfig
-export HIVE_NS='dev-hive'
+export KUBECONFIG=$HIVE_ROOT/.tmp/_output/.kube/dev-hive.kubeconfig
 
 namespace="dev-hive"
 
 IMG="localhost:5000/hive:latest"
 
-echo "Creating namespace $(namespace) if it doesn't exist..."
+echo "Creating namespace ${namespace} if it doesn't exist..."
 kubectl create namespace "${namespace}" || true
 
 echo "Creating deploy directory and copying kustomization.yaml..."
@@ -40,4 +39,3 @@ cd config/templates/ || exit
 oc process --local=true -p HIVE_NS="${namespace}" -p LOG_LEVEL=debug -f hiveconfig.yaml | oc apply -f -
 
 echo "Operator deployment completed successfully."
-

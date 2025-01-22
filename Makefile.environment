@@ -1,6 +1,6 @@
 HIVE_ROOT := $(shell git rev-parse --show-toplevel)
 export PATH := $(HIVE_ROOT)/.tmp/_output/bin:$(PATH)
-export KUBECONFIG := $(HIVE_ROOT)/.kube/dev-hive.kubeconfig
+export KUBECONFIG := $(HIVE_ROOT)/.tmp/_output/.kube/dev-hive.kubeconfig
 export HIVE_NS := 'dev-hive'
 
 all: install_environment_bins create_cluster_registry nerdctl_login start_buildkitd deploy
@@ -21,7 +21,6 @@ nerdctl_login:
 	read -s PASSWORD; \
 	nerdctl login registry.ci.openshift.org --username=$$USERNAME --password=$$PASSWORD
 
-
 # Create Kind Cluster & registry
 create_cluster_registry:
 	@echo "Creating a Kind cluster"
@@ -31,7 +30,6 @@ create_cluster_registry:
 start_buildkitd:
 	@echo "Starting buildkitd"
 	./hack/buildkitd_build_push_image.sh
-
 
 # Deploy & install certs
 deploy:
@@ -48,7 +46,6 @@ scale-down-operator:
 scale-down-controllers:
 	oc scale -n dev-hive deployment.v1.apps/hive-controllers --replicas=0
 
-# TODO: Fix envs, kind delete cluster --name dev-hive
 # Run operator
 run-operator: scale-down-operator
 	./bin/operator --log-level=debug

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 HIVE_ROOT="$(git rev-parse --show-toplevel)"
-CNI_PATH="$HIVE_ROOT"/.tmp/cni/bin
+CNI_PATH="$HIVE_ROOT"/.tmp/_output/cni/bin
 export HIVE_ROOT
 export CNI_PATH
 export PATH=$HIVE_ROOT/.tmp/_output/bin:$PATH
@@ -14,7 +14,8 @@ reg_port='5000'
 
 sleep 3
 
-cat <<EOF | KIND_EXPERIMENTAL_PROVIDER="nerdctl" kind create cluster --name "${cluster_name}" --kubeconfig "${HIVE_ROOT}"/.kube/"${cluster_name}".kubeconfig --config=-
+# create cluster
+cat <<EOF | KIND_EXPERIMENTAL_PROVIDER="nerdctl" kind create cluster --name "${cluster_name}" --kubeconfig "${HIVE_ROOT}"/.tmp/_output/.kube/"${cluster_name}".kubeconfig --config=-
 
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
@@ -26,4 +27,5 @@ EOF
 
 sleep 3
 
+# create registry
 nerdctl run -d --restart=always -p "5000:5000" --name "kind-nerdctl-registry" --network "kind" registry:2

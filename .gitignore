@@ -8,7 +8,6 @@ bin/**
 **/__debug_bin
 **/__pycache__
 
-
 # Test binary, build with `go test -c`
 *.test
 

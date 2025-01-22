@@ -13,13 +13,14 @@ BUILDKIT_VERSION="v0.18.2"
 CNI_PLUGINS_VERSION="v1.6.2"
 RUNC_VERSION="v1.2.3"
 HIVE_ROOT="$(git rev-parse --show-toplevel)"
-CNI_PATH="$HIVE_ROOT"/.tmp/cni/bin
+CNI_PATH="$HIVE_ROOT"/.tmp/_output/cni/bin
 
 command_exists() {
  command -v "$1" >/dev/null 2>&1
 }
 
 # Requirements for running this script or not available in binary form
+commands=("make" "awk" "sed" "git" "python3" "pip" "iptables")
 
 for command in "${commands[@]}"; do
   if ! command_exists "$command"; then
@@ -85,13 +86,15 @@ if ! command_exists nerdctl; then
   tar -xz -C "${HIVE_ROOT}/.tmp/_output/bin" containerd-rootless.sh containerd-rootless-setuptool.sh nerdctl
 fi
 
-# Install cfssl & cfssljson
+# Install cfssl and cfssljson
 if ! command_exists cfssl; then
   curl -L "https://github.com/cloudflare/cfssl/releases/download/v${CFSSL_VERSION}/cfssl_${CFSSL_VERSION}_linux_amd64" -o "${HIVE_ROOT}/.tmp/_output/bin/cfssl"
-  chmod +x "$HIVE_ROOT"/.tmp/_output/bin/cfssl
+  chmod +x "${HIVE_ROOT}/.tmp/_output/bin/cfssl"
+fi
 
+if ! command_exists cfssljson; then
   curl -L "https://github.com/cloudflare/cfssl/releases/download/v${CFSSL_VERSION}/cfssljson_${CFSSL_VERSION}_linux_amd64" -o "${HIVE_ROOT}/.tmp/_output/bin/cfssljson"
-  chmod +x "$HIVE_ROOT"/.tmp/_output/bin/cfssljson
+  chmod +x "${HIVE_ROOT}/.tmp/_output/bin/cfssljson"
 fi
 
 # Install oc
@@ -137,7 +140,7 @@ if [[ "$CHECK_OUTPUT" != *"Requirements are satisfied"* ]]; then   echo "Error: 
  exit 1
 fi
 
-# Install containerd in rootless mode, this will createa rootlesskit instance
+# Install containerd in rootless mode, this will create a rootlesskit instance
 containerd-rootless-setuptool.sh install
 if [ $? -ne 0 ]; then
  echo "Error: Failed to install containerd in rootless mode."
