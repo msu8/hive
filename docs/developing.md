@@ -241,9 +241,9 @@ After opening Hive in VScode, you can seup the IDE for debugging by pressing *ct
 
 The launch.json will govern which aspect to debug, e.g. the controller or the operator. Pressing F5 starts the debug process.
 
-Example of launch.json for debugging the controller *(absolute paths are required, fill in your username)*
+Example of launch.json for debugging the controller:
 
-*Note: Metrics are a necessary part of the controller, however, for development purposes they are not needed and we can go around it creating an empty ({}) metrics.json file. The .json file is created automatically when running make -f Makefile.environment run-controller*
+*Note: Metrics are a necessary part of the controller, however, for development purposes they are not needed and we can go around it creating an empty ({}) metrics.json file. The .json file is created automatically when running make -f Makefile.environment run-controller, exported here as METRICS_CONFIG_FILE*
 
 ```bash
 {
