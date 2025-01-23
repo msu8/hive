@@ -3,23 +3,12 @@ export PATH := $(HIVE_ROOT)/.tmp/_output/bin:$(PATH)
 export KUBECONFIG := $(HIVE_ROOT)/.tmp/_output/dev-hive.kubeconfig
 export HIVE_NS := 'dev-hive'
 
-all: install_environment_bins create_cluster_registry nerdctl_login start_buildkitd deploy
+all: install_environment_bins create_cluster_registry start_buildkitd deploy
 
 # Install dependency bins, make hive & run containerd
 install_environment_bins:
 	@echo "Installing go and additional dependencies"
 	./hack/install_dev_env.sh
-
-nerdctl_login:
-	@echo "========================================"
-	@echo "OCP credentials are required, usernamne with which you login to OCP (e.g. oc login -u=$$ -p=$$)"
-	@echo "the password being a token, gotten via "oc whoami -t", or through through "copy logging command" in OCP web instance"
-	@echo "========================================"image
-	@echo "Enter your username:"
-	@read USERNAME; \
-	echo "Enter your password:"; \
-	read -s PASSWORD; \
-	nerdctl login registry.ci.openshift.org --username=$$USERNAME --password=$$PASSWORD
 
 # Create Kind Cluster & registry
 create_cluster_registry:
