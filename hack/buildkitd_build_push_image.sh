@@ -5,25 +5,6 @@ export HIVE_ROOT
 export CNI_PATH
 export PATH=$HIVE_ROOT/.tmp/_output/bin:$PATH
 
-# Run BuildKit in the background
-echo "Starting BuildKit daemon in the background..."
-$ containerd-rootless-setuptool.sh nsenter \
-    -- buildkitd \
-    --oci-worker=false \
-    --containerd-worker=true \
-    --containerd-worker-snapshotter=native > /dev/null 2>&1
-
-if pgrep 'buildkitd' > /dev/null; then
- echo "BuildKit daemon is running in the background."
-else
- echo "Error: Failed to start BuildKit daemon."
- exit 1
-fi
-
-echo "Setup complete. BuildKit is installed and running. Building and pushing the image"
-
-sleep 10
-
 touch "$HIVE_ROOT/.tmp/_output/config.json"
 
 buildctl --addr unix:///run/user/$UID/buildkit/buildkitd.sock build \
