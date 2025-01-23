@@ -11,11 +11,10 @@ $ containerd-rootless-setuptool.sh nsenter \
     -- buildkitd \
     --oci-worker=false \
     --containerd-worker=true \
-    --containerd-worker-snapshotter=native > /dev/null 2>&1 &
-BUILDKIT_PID=$!
+    --containerd-worker-snapshotter=native > /dev/null 2>&1
 
-if ps -p $BUILDKIT_PID > /dev/null; then
- echo "BuildKit daemon is running in the background (PID: $BUILDKIT_PID)."
+if pgrep 'buildkitd' > /dev/null; then
+ echo "BuildKit daemon is running in the background."
 else
  echo "Error: Failed to start BuildKit daemon."
  exit 1
