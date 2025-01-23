@@ -243,6 +243,8 @@ The launch.json will govern which aspect to debug, e.g. the controller or the op
 
 Example of launch.json for debugging the controller *(absolute paths are required, fill in your username)*
 
+*Note: Metrics are a necessary part of the controller, however, for development purposes they are not needed and we can go around it creating an empty ({}) metrics.json file. The .json file is created automatically when running make -f Makefile.environment run-controller*
+
 ```bash
 {
    "version": "0.2.0",
@@ -255,9 +257,9 @@ Example of launch.json for debugging the controller *(absolute paths are require
        "program": "${workspaceFolder}/cmd/manager/main.go",
        "env": {
          "HIVE_NS": "dev-hive",
-         "KUBECONFIG":"/home/$USERNAME/hive/.tmp/_output/.kube/dev-hive.kubeconfig",
+         "KUBECONFIG":"${workspaceFolder}/.tmp/_output/dev-hive.kubeconfig",
          "HIVE_SKIP_LEADER_ELECTION":"1",
-         "METRICS_CONFIG_FILE":"/home/$USERNAME/hive/metrics.json",
+         "METRICS_CONFIG_FILE":"${workspaceFolder}/.tmp/_output/metrics.json",
          "HIVE_MACHINEPOOL_POD_NAME":"hive-machinepool-0",
          "HIVE_OPERATOR_NS":"dev-hive",
          "HIVE_CLUSTERSYNC_POD_NAME":"hive-clustersync-0",

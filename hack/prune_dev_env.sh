@@ -16,12 +16,7 @@ nerdctl system prune -a -f
 containerd-rootless-setuptool.sh uninstall
 rootlesskit rm -rf ~/.local/share/containerd
 rootlesskit rm -rf ~/.local/share/nerdctl
-
-buildkitd_pids=$(pgrep -f 'buildkitd')
-
-for pid in $buildkitd_pids; do
-  kill "$pid"
-done
+rm -rf /run/user/"$UID"/buildkitd
 
 go clean -cache -modcache
 rm -rf "$HIVE_ROOT"/.tmp "$HIVE_ROOT"/.kube "$HIVE_ROOT"/hiveadmission-certs

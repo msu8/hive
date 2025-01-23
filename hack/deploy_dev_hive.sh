@@ -3,7 +3,7 @@
 HIVE_ROOT="$(git rev-parse --show-toplevel)"
 export HIVE_ROOT
 export PATH=$HIVE_ROOT/.tmp/_output/bin:$PATH
-export KUBECONFIG=$HIVE_ROOT/.tmp/_output/.kube/dev-hive.kubeconfig
+export KUBECONFIG=$HIVE_ROOT/.tmp/_output/dev-hive.kubeconfig
 
 namespace="dev-hive"
 

@@ -15,7 +15,7 @@ reg_port='5000'
 sleep 3
 
 # create cluster
-cat <<EOF | KIND_EXPERIMENTAL_PROVIDER="nerdctl" kind create cluster --name "${cluster_name}" --kubeconfig "${HIVE_ROOT}"/.tmp/_output/.kube/"${cluster_name}".kubeconfig --config=-
+cat <<EOF | KIND_EXPERIMENTAL_PROVIDER="nerdctl" kind create cluster --name "${cluster_name}" --kubeconfig "${HIVE_ROOT}"/.tmp/_output/"${cluster_name}".kubeconfig --config=-
 
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4

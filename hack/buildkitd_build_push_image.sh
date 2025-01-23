@@ -7,7 +7,11 @@ export PATH=$HIVE_ROOT/.tmp/_output/bin:$PATH
 
 # Run BuildKit in the background
 echo "Starting BuildKit daemon in the background..."
-rootlesskit buildkitd > /dev/null 2>&1 &
+$ containerd-rootless-setuptool.sh nsenter \
+    -- buildkitd \
+    --oci-worker=false \
+    --containerd-worker=true \
+    --containerd-worker-snapshotter=native > /dev/null 2>&1 &
 BUILDKIT_PID=$!
 
 if ps -p $BUILDKIT_PID > /dev/null; then
@@ -17,16 +21,19 @@ else
  exit 1
 fi
 
-# Edit registry URL according to buildkitd requirements
-sed -i 's/\.org:443/\.org\/v1\//g' ~/.docker/config.json
-
 echo "Setup complete. BuildKit is installed and running. Building and pushing the image"
 
 sleep 10
 
+touch "$HIVE_ROOT/.tmp/_output/config.json"
+
 buildctl --addr unix:///run/user/$UID/buildkit/buildkitd.sock build \
-    --frontend dockerfile.v0 \
-    --local context=. \
-    --local dockerfile=. \
-    --secret id=docker,src=/home/"$USER"/.docker/config.json \
-    --output type=image,name=localhost:5000/hive:latest,push=true
+  --frontend dockerfile.v0 \
+  --local context=. \
+  --local dockerfile=. \
+  --secret id=docker,src="$HIVE_ROOT/.tmp/_output/config.json" \
+  --opt build-arg:EL8_BUILD_IMAGE=registry.ci.openshift.org/openshift/release:golang-1.22 \
+  --opt build-arg:EL9_BUILD_IMAGE=registry.ci.openshift.org/openshift/release:golang-1.22 \
+  --opt build-arg:BASE_IMAGE=registry.ci.openshift.org/origin/4.16:base \
+  --opt build-arg:GO="CGO_ENABLED=0 go" \
+  --output type=image,name=localhost:5000/hive:latest,push=true
